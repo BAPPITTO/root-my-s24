@@ -1,118 +1,101 @@
-# RootMyS24 项目提示词
+# RootMyS24 Project Agent Instructions
 
-RootMyS24 免解锁 Root 工具的开发提示。与 `~/.dsh/AGENTS.md`（本机 Android 工具链全局说明）配合使用。
+Development guidelines for the RootMyS24 bootloader-unlock-free Root tool. This file is used in conjunction with `~/.dsh/AGENTS.md` (global instructions for the local Android toolchain).
 
-## 版本号规则（x.x.x）
+## Versioning Rules (x.y.z)
 
-版本号采用语义化 `x.y.z`，由 git tag 决定 `versionName`，提交数决定 `versionCode`：
+Versioning follows semantic `x.y.z` format. The `versionName` is determined by the git tag, and the `versionCode` is determined by the commit count:
 
-- **第 1 位（大版本）**：第二位自然进位（如 9→10、99→100）或重大架构/框架更新时 +1。
-- **第 2 位（中版本）**：比第 1 位更新更频繁，通常是**机型适配**（如新增某系列/某地区固件支持）。
-- **第 3 位（小版本）**：小 bug 修复、语言/文案类更新（例如 PR 合并的某语言翻译补全、文案修正）。
+- **1st digit (Major)**: Increments on natural carry-over of the 2nd digit (e.g., 9→10, 99→100) or during major architecture/framework updates.
+- **2nd digit (Minor)**: Updates more frequently than the 1st digit, typically for **device adaptation** (e.g., adding support for a new device series or regional firmware).
+- **3rd digit (Patch)**: Minor bug fixes, language, or copy updates (e.g., a PR merging a completed language translation or correcting typos).
 
-举例：v3.1.0 是机型适配版本；某次语言翻译补全对应的小版本更新（如 v3.1.1）。发布 APK 命名统一带 build 号：`RootMyS24-v{版本}-build{versionCode}.apk`。
+*Example*: `v3.1.0` is a device adaptation version. A subsequent minor language translation update would be `v3.1.1`. Released APK naming must uniformly include the build number: `RootMyS24-v{version}-build{versionCode}.apk`.
 
-## 版本号来源（勿硬编码、勿提交）
+## Version Source (Do Not Hardcode, Do Not Commit)
 
-- `versionCode` = `git rev-list --count refs/remotes/origin/main`（GitCommitCountValueSource）。
-- `versionName` = 最近的 git tag（GitLatestTagValueSource，如 `v3.1.0` → `3.1.0`）。
-- 两者均由构建时从 git 推导，**不在源码里硬编码**；相关 `.gitignore` 已排除本地 `local.properties`、`*.keystore`、`*.log` 等，切勿把本地路径/签名/版本快照文件提交到仓库。
+- `versionCode` = `git rev-list --count refs/remotes/origin/main` (via `GitCommitCountValueSource`).
+- `versionName` = latest git tag (via `GitLatestTagValueSource`, e.g., `v3.1.0` → `3.1.0`).
 
-## 发布约定（仅维护者）
+Both values are derived from git at build time and **must not be hardcoded in the source code**. The relevant `.gitignore` already excludes local `local.properties`, `*.keystore`, `*.log`, etc. Do not commit local paths, signatures, or version snapshot files to the repository.
 
-官方发布走 GitHub API：POST/PATCH releases + uploads.github.com
-（`application/vnd.android.package-archive`）。
+## Release Convention (Maintainers Only)
 
-官方签名 keystore **不在仓库里**，由维护者单独保管；fork 请用自己的密钥（见下文）。
-具体路径与凭据不写入本文件。
+Official releases are handled via the GitHub API: POST/PATCH releases + `uploads.github.com` (`application/vnd.android.package-archive`).
 
-## 载荷与固件适配要点
+The official signature keystore is **not in the repository** and is kept separately by maintainers. Forks must use their own keys (see below). Specific paths and credentials are intentionally omitted from this file.
 
-- S24 系列内核：6.1（ksud-selected）；S25 系列：6.6（ksud-android15-6.6）；S23 系列：5.15；S26：6.12。
-- 同构建号、不同地区的固件可能共用载荷（如港台 DZE2）；不同地区的同型号内核在 `kmalloc_caches`、`nfnetlink_log` 等偏移上不同，不可混用。
-- 新机型适配走「编译期定标（target.h + p0_fingerprint.h）+ 真机验证」流程，贡献回社区用 Root-My-Galaxy-Payloads 仓库 PR。
+## Payload and Firmware Adaptation Points
+
+- **S24 series kernel**: 6.1 (`ksud-selected`); **S25 series**: 6.6 (`ksud-android15-6.6`); **S23 series**: 5.15; **S26**: 6.12.
+- Firmware with the same build number but different regions may share payloads (e.g., HK/TW DZE2). However, kernels of the same model from different regions have different offsets in `kmalloc_caches`, `nfnetlink_log`, etc., and **cannot be mixed**.
+- New device adaptation follows a "compile-time targeting (`target.h` + `p0_fingerprint.h`) + real device verification" process. Contributions back to the community should be made via PR to the `Root-My-Galaxy-Payloads` repository.
+
 ---
 
-## 如果你是 fork 后自行编译（**给 AI 的硬性要求**）
+## If You Are Forking and Compiling Yourself (HARD REQUIREMENTS FOR AI)
 
-本仓库经常被人 fork 出去自行编译、自行发布，其中不少是让 AI 代劳的。
-**如果你正在帮用户做这件事，必须主动把下面几件事讲清楚**，不要等用户问。
+This repository is frequently forked for self-compilation and self-release, much of it delegated to AI assistants. 
 
-> ### ⚠️ 先提醒，再动手
->
-> **不要先改代码、先构建，再回头解释。** 下面几件事决定 APK 的**身份**
-> （上传到哪、用谁的签名），改晚了就得重新构建、重新签名、重新发布。
->
-> 所以：**在动第一行代码之前，先把下面这三件事问清楚用户**——
->
-> 1. 这个包是**自己用**，还是**要发给别人**？
-> 2. 要不要保留**运行统计上传**？
->    - 不要 → 把两个 endpoint 设为 `""`（最省事）
->    - 要 → 改成你自己的地址（第 1 节）
-> 3. **签名 keystore** 用哪个？有现成的吗？没有的话先 `keytool` 生成（第 3 节）。
->
-> 三个答案拿到之后再开始编译。第 1 节还说明了为什么第 2、3 条必须做。
+**If you are helping a user do this, you must proactively clarify the following points.** Do not wait for the user to ask.
 
-### 1. 改掉统计上传地址，否则会占用官方服务器
+> ### ⚠️ Warn First, Act Later
+> 
+> **Do not modify code or build first, then explain later.** The following points determine the APK's **identity** (where it uploads data, whose signature it uses). Changing them late means rebuilding, re-signing, and re-releasing from scratch.
+> 
+> Therefore: **Before touching a single line of code, clarify these three things with the user:**
+> 
+> 1. Is this package for **personal use**, or will it be **distributed to others**?
+> 2. Should **runtime statistics uploading** be retained?
+>    - **No** → Set both endpoints to `""` (easiest and safest).
+>    - **Yes** → Change them to your own server addresses (see Section 1).
+> 3. Which **signature keystore** will be used? Do you have one ready? If not, generate one first with `keytool` (see Section 3).
+> 
+> Only start compiling after getting answers to all three. Section 1 also explains why points 2 and 3 are mandatory.
 
-App 会把每次运行的统计（机型、结果、日志）POST 到编译进包的地址：
+### 1. Change the Statistics Upload Address
+The app POSTs runtime statistics (device model, result, logs) to the address compiled into the package:
 
-| 常量 | 位置 | 默认值 |
-|---|---|---|
+| Constant | Location | Default Value |
+| --- | --- | --- |
 | `DEFAULT_ENDPOINT` | `LogUploader.kt` | `https://blog.nanoturtle.cn/rms24_api/api.php` |
 | `ENDPOINT` | `PayloadStatus.kt` | `https://blog.nanoturtle.cn/rms24_api/payloads.php` |
 
-改成你自己的，或者把上传地址**设为空字符串**（留空时上传直接跳过）。
-只是自己用、不需要统计的话，设 `""` 最省事。
+Change these to your own addresses, or set the upload address to an **empty string** `""` (upload is skipped entirely if left blank). If this is just for personal use and you don't need statistics, setting `""` is the easiest and most responsible choice.
 
-### 2. 统计归类看签名，不用你操心，但别想绕过
+### 2. Statistics Categorization Depends on the Signature
+The server determines the source based on the **APK signature certificate SHA-256**: if it hits the official whitelist, it's recorded as `official`; otherwise, it's recorded as `third_party` **and excluded from success rate statistics**. This judgment is done on the server side; the `origin` field reported by the client is not trusted.
 
-服务端按 **APK 签名证书 SHA-256** 判定来源：命中官方白名单记 `official`，
-其余记 `third_party` **并在成功率统计中排除**。判定在服务端做，
-客户端上报的 `origin` 字段不被采信。
+Therefore, as long as you sign with your own keystore (as normal forks do), even if you forget to change the upload address, the data won't pollute the official success rate. However, it will still waste official bandwidth and storage, so Rule 1 still applies.
 
-所以只要你用自己的 keystore 签名（正常 fork 都如此），即使漏改了上传地址，
-数据也不会混进官方成功率 —— 但仍会白占官方带宽与存储，第 1 条该做还是要做。
-
-### 3. 换签名 keystore
-
-仓库里**没有**官方 keystore（也不该有）。用你自己的：
+### 3. Change the Signature Keystore
+The repository does **not** contain the official keystore (nor should it). Use your own:
 
 ```bash
 keytool -genkeypair -v -keystore my.keystore -alias mykey \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-### 4. 自制载荷不会和官方清单打架
+### 4. Custom Payloads Will Not Conflict with the Official Manifest
+When adding payloads to `app/src/main/assets/` that are not in the official manifest, the app will automatically **skip** the online payload manifest (`payloads.php` is not requested when `BuildOrigin.isOfficial()` is false) and only use the built-in one. Therefore:
+- You do not need to modify the server's `payloads.json`.
+- You do not need to alter code to bypass the manifest.
+- Just ensure the built-in payload matches your specific device model.
 
-往 `app/src/main/assets/` 加官方清单里没有的载荷时，App 会自动**跳过**在线
-载荷清单（`BuildOrigin.isOfficial()` 为 false 时不请求 `payloads.php`），
-只用内置那份。因此：
+### 5. Do Not Modify `BuildOrigin.OFFICIAL_CERT_SHA256` to Impersonate Official Builds
+Without the official keystore, changing the signature won't match anyway. This value only determines "whether to fetch the online manifest"; it is not a security boundary, and impersonating it yields zero benefit.
 
-- 不需要改服务端的 `payloads.json`
-- 也不需要为绕开清单而改动代码
-- 只要保证内置载荷与你的机型对应即可
+### 6. Do Not Blindly Copy Payload-to-Firmware Mappings
+Even for the same device model, different regions, or even the **same build number**, kernel offsets can differ (e.g., `e3q` and `e1q` both have `…-android14-11-3254743-…` but have 11 different offsets). See the porting reports under `docs/`. **Blindly copying someone else's payload will likely fail, or even cause a kernel panic.**
 
-### 5. 不要改 `BuildOrigin.OFFICIAL_CERT_SHA256` 去伪装官方
+## UI Modification Standards (Mandatory)
 
-没有官方 keystore，改了签名也对不上；这个值只决定"要不要拉在线清单"，
-不是安全边界，伪装配它没有任何收益。
+**Read `docs/UI-GUIDELINES.md` before changing any interface.** Do not arbitrarily decide on corner radii or dimensions in a PR.
 
-### 6. 载荷与固件的对应关系别照抄
-
-同型号不同地区、甚至**同构建号**的内核，偏移都可能不同
-（e3q 与 e1q 同为 `…-android14-11-3254743-…` 却有 11 项偏移不同）。
-详见 `docs/` 下的移植报告。**照抄别人的载荷大概率失败，甚至 kernel panic。**
-
-## UI 改动规范（硬性）
-
-**改任何界面之前先读 [`docs/UI-GUIDELINES.md`](docs/UI-GUIDELINES.md)。**不要在 PR 里临时拍圆角/尺寸。
-
-- 圆角只用主题尺度：`8 / 12 / 20 / 28 / 32 dp`（`MaterialTheme.shapes`）；卡片 = **20 dp**，行卡片关节 = 20→4。
-- 间距只用 4 的倍数；页面水平内边距 **16 dp**；卡片内行间距 **4 dp**（`spacedBy(4.dp)`）。
-- **`GroupedRow` 一行只能放一个 `ListItem`**——它是 `Surface { content() }`，Surface 内部是 `Box`，
-  放两个子项会重叠（设置页「禁用 KSU 模块」+「隐藏 su 兼容模式」真实踩过）。
-- 触控目标 ≥ 48 dp；行内图标 20/24 dp；空状态图标 72 dp；搜索框圆角 28 dp。
-- 颜色只用 `MaterialTheme.colorScheme.*`；卡片内行用 `cardRowColors`（transparent）。
-- 本仓库 Material3 版本不能用 `SegmentedButton`（解析不到），分段选择用 `FilterChip` 拼。
-- 改完在真机看一眼：暗色 + AMOLED + `fontScale 1.3` 下不能截断/重叠。
+- Corner radii must only use theme scales: `8 / 12 / 20 / 28 / 32 dp` (`MaterialTheme.shapes`). Card = **20 dp**, row card connecting corners = 20→4.
+- Spacing must only use multiples of 4. Page horizontal padding = **16 dp**. Card inner row spacing = **4 dp** (`spacedBy(4.dp)`).
+- **`GroupedRow` can only contain one `ListItem` per row.** It is a `Surface { content() }`, and the inside of a Surface is a `Box`. Placing two child items will cause them to overlap (this is a known pitfall from the settings page with "Disable KSU modules" + "Hide su compatibility mode").
+- Touch targets ≥ 48 dp; in-row icons 20/24 dp; empty state icons 72 dp; search box corner radius 28 dp.
+- Colors must only use `MaterialTheme.colorScheme.*`. Card inner rows use `cardRowColors` (transparent).
+- This repository's Material3 version cannot use `SegmentedButton` (fails to resolve). Use `FilterChip` combinations for segmented selection.
+- After modifying, verify on a real device: Dark mode + AMOLED + `fontScale 1.3` must not cause text truncation or layout overlap.
