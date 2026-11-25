@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="RootMyS24 — dual-engine temporary root (CVE-2026-98260 / CVE-2026-43499)" width="100%">
+  <img src="banner.png" alt="RootMyS24 — dual-engine temporary root (CVE-2026-98260 / CVE-2026-43499)" width="100%">
 </p>
 
 <h1 align="center">RootMyS24</h1>
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <b>English</b> &nbsp;|&nbsp; <a href="docs/">Docs</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="docs/PRIVACY.md">Privacy</a>
+  <b>English</b> &nbsp;|&nbsp; <a href="docs/">Docs</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="PRIVACY.md">Privacy</a>
 </p>
 
 > **Disclaimer**: for security research and your own devices only. Kernel exploitation can crash the system, lose data or brick the device; you accept the risk. Do not use it on devices you do not own.
