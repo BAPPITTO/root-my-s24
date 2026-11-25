@@ -158,7 +158,7 @@ A settings toggle (off by default) that loads a Samsung-adapted BakaSU LKM inste
 
 - Verified only on **SM-S9280 / S9280ZCS6DZH3 (6.1.145)**
 - Must be re-run every boot; **do not use "Install" in its manager**
-- See [docs/bakasu-kernel-mode.md](docs/bakasu-kernel-mode.md)
+- See [docs/bakasu-kernel-mode.md](bakasu-kernel-mode.md)
 
 ## 5. Caveats
 
@@ -174,10 +174,10 @@ A settings toggle (off by default) that loads a Samsung-adapted BakaSU LKM inste
 
 | Version | Date | Highlights |
 |---|---|---|
-| [v3.6.4-beta.1](docs/release-v3.6.4-beta.1.md) | 2026-11-14 | Pre-release: per-target payloads (first: DZJ3), #35 disable-modules via `disable` markers |
-| [v3.6.3](docs/release-v3.6.3.md) | 2026-11-10 | Local run-log archive + log IDs, local history list |
-| [v3.6.2](docs/release-v3.6.2.md) | 2026-11-08 | Safe teardown (soft reboot no longer hard-reboots), one-attempt-per-boot enforcement |
-| [v3.6.0](docs/release-v3.6.0.md) | 2026-11-07 | Added the 98260 UAF engine (dual-engine switch) |
+| [v3.6.4-beta.1](release-v3.6.4-beta.1.md) | 2026-11-14 | Pre-release: per-target payloads (first: DZJ3), #35 disable-modules via `disable` markers |
+| [v3.6.3](release-v3.6.3.md) | 2026-11-10 | Local run-log archive + log IDs, local history list |
+| [v3.6.2](release-v3.6.2.md) | 2026-11-08 | Safe teardown (soft reboot no longer hard-reboots), one-attempt-per-boot enforcement |
+| [v3.6.0](release-v3.6.0.md) | 2026-11-07 | Added the 98260 UAF engine (dual-engine switch) |
 
 Full history: see the `docs/` directory.
 
@@ -229,12 +229,12 @@ Full index: see the `docs/` directory.
 
 | Topic | Docs |
 |---|---|
-| Getting started | [Quick start](#2-quick-start) · [Contributing](CONTRIBUTING.md) · [Authorization](docs/auth-plan.md) · [Privacy](docs/PRIVACY.md) |
-| Internals | [Technical principles](docs/technical-principles.md) · [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
-| Porting | [Full adaptation guide](docs/adaptation-guide-full.md) · [CONTRIBUTING → device support](CONTRIBUTING.md) |
-| Calibration reports | [DZJ3 (98260)](docs/port-98260-S9280ZCS6DZJ3.md) · [DZE2](docs/dze2-target-complete.md) · [CZA1](docs/cza1-target-complete.md) · [F741N](docs/f741n-dze1-target-complete.md) · [S928B EZIF](docs/s928b-ezif-target-complete.md) |
-| Logs & debugging | [Run-log analysis](docs/run-log-analysis.md) |
-| Build & release | [CI release](docs/ci-release.md) · [Separate builds](docs/separate-builds.md) |
+| Getting started | [Quick start](#2-quick-start) · [Contributing](CONTRIBUTING.md) · [Authorization](auth-plan.md) · [Privacy](PRIVACY.md) |
+| Internals | [Technical principles](technical-principles.md) · [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
+| Porting | [Full adaptation guide](adaptation-guide-full.md) · [CONTRIBUTING → device support](CONTRIBUTING.md) |
+| Calibration reports | [DZJ3 (98260)](port-98260-S9280ZCS6DZJ3.md) · [DZE2](dze2-target-complete.md) · [CZA1](cza1-target-complete.md) · [F741N](docs/f741n-dze1-target-complete.md) · [S928B EZIF](s928b-ezif-target-complete.md) |
+| Logs & debugging | [Run-log analysis](run-log-analysis.md) |
+| Build & release | [CI release](ci-release.md) · [Separate builds](separate-builds.md) |
 
 ## 10. How it works (summary)
 
