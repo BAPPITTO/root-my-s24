@@ -15,7 +15,7 @@
   <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/downloads/BAPPITTO/root-my-s24/total?style=flat-square&color=1E88E5"></a>
   <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/stars/BAPPITTO/root-my-s24?style=flat-square&color=1E88E5"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
-  <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/../CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
 </p>
 
 <p align="center">
@@ -141,7 +141,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # optional
 
 - `<TAG>` is the full build code in upper case (e.g. `S9280ZCS6DZJ3`); the app prefers the target directory and falls back to the shared payload
 - Merged so far: `S9280ZCS6DZJ3` (community port, PR #44 — verified on device via manual staging, `tested=false` until an in-app run log exists)
-- Porting flow and PR requirements: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Porting flow and PR requirements: [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 ### Driver versions
 
@@ -217,7 +217,7 @@ RootMyS24/
 Artifacts are named `RootMyS24-v{version}-{channel}-build{versionCode}.apk`.
 
 > Channels: `alphaN` = engine/framework experiments, `betaN` = device/firmware previews, `stable` = formal release.
-> Pushing a `v*` tag triggers `.github/workflows/release.yml` (signed build + GitHub Release); see [docs/ci-release.md](docs/ci-release.md).
+> Pushing a `v*` tag triggers `.github/workflows/release.yml` (signed build + GitHub Release); see [ci-release.md](docs/ci-release.md).
 
 Payloads (exploit / root helper / ksud) are bundled in `app/src/main/assets/`; their build chain is the maintainer's responsibility.
 
@@ -229,10 +229,10 @@ Full index: see the `docs/` directory.
 
 | Topic | Docs |
 |---|---|
-| Getting started | [Quick start](#2-quick-start) · [Contributing](CONTRIBUTING.md) · [Authorization](auth-plan.md) · [Privacy](PRIVACY.md) |
+| Getting started | [Quick start](#2-quick-start) · [Contributing](../CONTRIBUTING.md) · [Authorization](auth-plan.md) · [Privacy](PRIVACY.md) |
 | Internals | [Technical principles](technical-principles.md) · [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
-| Porting | [Full adaptation guide](adaptation-guide-full.md) · [CONTRIBUTING → device support](CONTRIBUTING.md) |
-| Calibration reports | [DZJ3 (98260)](port-98260-S9280ZCS6DZJ3.md) · [DZE2](dze2-target-complete.md) · [CZA1](cza1-target-complete.md) · [F741N](docs/f741n-dze1-target-complete.md) · [S928B EZIF](s928b-ezif-target-complete.md) |
+| Porting | [Full adaptation guide](adaptation-guide-full.md) · [CONTRIBUTING → device support](../CONTRIBUTING.md) |
+| Calibration reports | [DZJ3 (98260)](port-98260-S9280ZCS6DZJ3.md) · [DZE2](dze2-target-complete.md) · [CZA1](cza1-target-complete.md) · [F741N](f741n-dze1-target-complete.md) · [S928B EZIF](s928b-ezif-target-complete.md) |
 | Logs & debugging | [Run-log analysis](run-log-analysis.md) |
 | Build & release | [CI release](ci-release.md) · [Separate builds](separate-builds.md) |
 
@@ -241,7 +241,7 @@ Full index: see the `docs/` directory.
 - **98260 UAF**: a timing bug in `exec: Cleanup POSIX timers right after de_thread()` leaves a `timerqueue_node` use-after-free. A pipe read/write primitive builds a fake workqueue, `call_usermodehelper` runs `uhexec` as root, which bind-mounts a KDP-patched ksud in a private mount namespace and late-loads the driver. Credentials are never forged, so KDP/RKP/DEFEX are not involved.
 - **GhostLock 43499**: a kernel-stack use-after-free in rtmutex. Rolling back a PI-futex deadlock leaves a dangling pointer into a freed kernel stack; reusing that stack as a fake `rt_mutex_waiter` yields physical memory read/write, KASLR is bypassed, SELinux downgraded, and the helper finally late-loads KernelSU.
 
-Neither chain touches persistent partitions; the bootloader stays locked and the KNOX e-fuse is not tripped. See [docs/technical-principles.md](docs/technical-principles.md).
+Neither chain touches persistent partitions; the bootloader stays locked and the KNOX e-fuse is not tripped. See [docs/technical-principles.md](technical-principles.md).
 
 ## 11. Project data
 
