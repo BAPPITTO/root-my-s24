@@ -14,12 +14,12 @@
 <p align="center">
   <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/downloads/BAPPITTO/root-my-s24/total?style=flat-square&color=1E88E5"></a>
   <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/stars/BAPPITTO/root-my-s24?style=flat-square&color=1E88E5"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
+  <a href="../LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
 </p>
 
 <p align="center">
-  <b>English</b> &nbsp;|&nbsp; <a href="docs/">Docs</a> · <a href="../CONTRIBUTING.md">Contributing</a> · <a href="PRIVACY.md">Privacy</a>
+  <b>English</b> &nbsp;|&nbsp; <a href="./">Docs</a> · <a href="../CONTRIBUTING.md">Contributing</a> · <a href="PRIVACY.md">Privacy</a>
 </p>
 
 > **Disclaimer**: for security research and your own devices only. Kernel exploitation can crash the system, lose data or brick the device; you accept the risk. Do not use it on devices you do not own.
@@ -217,7 +217,7 @@ RootMyS24/
 Artifacts are named `RootMyS24-v{version}-{channel}-build{versionCode}.apk`.
 
 > Channels: `alphaN` = engine/framework experiments, `betaN` = device/firmware previews, `stable` = formal release.
-> Pushing a `v*` tag triggers `.github/workflows/release.yml` (signed build + GitHub Release); see [ci-release.md](docs/ci-release.md).
+> Pushing a `v*` tag triggers `.github/workflows/release.yml` (signed build + GitHub Release); see [ci-release.md](ci-release.md).
 
 Payloads (exploit / root helper / ksud) are bundled in `app/src/main/assets/`; their build chain is the maintainer's responsibility.
 
@@ -241,7 +241,7 @@ Full index: see the `docs/` directory.
 - **98260 UAF**: a timing bug in `exec: Cleanup POSIX timers right after de_thread()` leaves a `timerqueue_node` use-after-free. A pipe read/write primitive builds a fake workqueue, `call_usermodehelper` runs `uhexec` as root, which bind-mounts a KDP-patched ksud in a private mount namespace and late-loads the driver. Credentials are never forged, so KDP/RKP/DEFEX are not involved.
 - **GhostLock 43499**: a kernel-stack use-after-free in rtmutex. Rolling back a PI-futex deadlock leaves a dangling pointer into a freed kernel stack; reusing that stack as a fake `rt_mutex_waiter` yields physical memory read/write, KASLR is bypassed, SELinux downgraded, and the helper finally late-loads KernelSU.
 
-Neither chain touches persistent partitions; the bootloader stays locked and the KNOX e-fuse is not tripped. See [docs/technical-principles.md](technical-principles.md).
+Neither chain touches persistent partitions; the bootloader stays locked and the KNOX e-fuse is not tripped. See [technical-principles.md](technical-principles.md).
 
 ## 11. Project data
 
