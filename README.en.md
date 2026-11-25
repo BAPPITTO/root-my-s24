@@ -12,16 +12,15 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.4--beta.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.4--beta.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
 </p>
 
 <p align="center">
-  <a href="README.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文（台灣）</a> · <a href="README.zh-HK.md">繁體中文（香港）</a> · <b>English</b>
-  &nbsp;|&nbsp; <a href="docs/README.md">Docs</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="docs/PRIVACY.md">Privacy</a>
+  <b>English</b> &nbsp;|&nbsp; <a href="docs/">Docs</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="docs/PRIVACY.md">Privacy</a>
 </p>
 
 > **Disclaimer**: for security research and your own devices only. Kernel exploitation can crash the system, lose data or brick the device; you accept the risk. Do not use it on devices you do not own.
@@ -103,9 +102,9 @@ Run logs → "Copy log ID" (v3.6.3+), paste the **log ID** into an issue; the te
 
 ### Other entries
 
-- **Calibrated, awaiting device verification**: CZA1 / CZB2 / BYH7 / S25 CZG1 / S928B AXK5·BYD9·CZA1 / W23 — see the Simplified Chinese README tables.
+- **Calibrated, awaiting device verification**: CZA1 / CZB2 / BYH7 / S25 CZG1 / S928B AXK5·BYD9·CZA1 / W23 — see the documentation tables in the `docs/` directory.
 - **Community 98260 target**: `S9280ZCS6DZJ3` (CHC DZJ3, 6.1.145) — merged via PR #44, verified by manual staging, `tested=false` until an in-app run log exists.
-- **Ported payloads** (unverified, enable "Show untested payloads"): S23/S24/S25/S26/foldables/Heart-of-the-World ports from RootMyGalaxy — see the Chinese README.
+- **Ported payloads** (unverified, enable "Show untested payloads"): S23/S24/S25/S26/foldables/Heart-of-the-World ports from RootMyGalaxy — see the documentation in the `docs/` directory.
 
 ### How matching works
 
@@ -122,7 +121,7 @@ Payloads are matched by **kernel build number**, not by model name or region:
 
 ### The 98260 UAF chain
 
-```
+```text
 timer UAF -> pipe read/write primitive -> fake workqueue -> call_usermodehelper
 -> uhexec -> bind-mount KDP ksud in a private mount ns -> late-load the KernelSU driver
 ```
@@ -135,7 +134,7 @@ timer UAF -> pipe read/write primitive -> fake workqueue -> call_usermodehelper
 
 The shared payload is `samtimer/libtimer` (EZIF/EZJ1). Other builds add their own target, **without touching the shared payload**:
 
-```
+```text
 app/src/main/assets/samtimer/targets/<TAG>/libtimer   # required
 app/src/main/assets/samtimer/targets/<TAG>/uhexec     # optional
 app/src/main/assets/samtimer/targets/<TAG>/ksud       # optional
@@ -181,11 +180,11 @@ A settings toggle (off by default) that loads a Samsung-adapted BakaSU LKM inste
 | [v3.6.2](docs/release-v3.6.2.md) | 2026-11-08 | Safe teardown (soft reboot no longer hard-reboots), one-attempt-per-boot enforcement |
 | [v3.6.0](docs/release-v3.6.0.md) | 2026-11-07 | Added the 98260 UAF engine (dual-engine switch) |
 
-Full history: [docs/README.md](docs/README.md).
+Full history: see the `docs/` directory.
 
 ## 7. Project layout
 
-```
+```text
 RootMyS24/
 ├── app/                     main app (Kotlin + Jetpack Compose)
 │   └── src/main/
@@ -223,11 +222,11 @@ Artifacts are named `RootMyS24-v{version}-{channel}-build{versionCode}.apk`.
 
 Payloads (exploit / root helper / ksud) are bundled in `app/src/main/assets/`; their build chain is the maintainer's responsibility.
 
-If you fork and build your own APK, read the "如果你是 fork 后自行编译" section in the project `AGENTS.md`: change the statistics endpoints and use your own signing key first.
+If you fork and build your own APK, read the "If you are forking and compiling yourself" section in the project `AGENTS.md`: change the statistics endpoints and use your own signing key first.
 
 ## 9. Documentation
 
-Full index: [docs/README.md](docs/README.md).
+Full index: see the `docs/` directory.
 
 | Topic | Docs |
 |---|---|
@@ -254,8 +253,9 @@ Neither chain touches persistent partitions; the bootloader stays locked and the
 <p align="center"><img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="Firmware distribution" width="100%"></p>
 <p align="center"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="Repository overview" width="100%"></p>
 
-## 12. Credits
+## 12. Credits & Acknowledgements
 
+- **Original Project**: Forked from [NanoTurtle1145/root-my-s24](https://github.com/NanoTurtle1145/root-my-s24)
 - [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) research (IonStack / NebuSec)
 - [SamTimer](https://github.com/RiosWesley/SamTimer) — reference implementation for the 98260 engine; safe-teardown patch submitted as [PR #2](https://github.com/RiosWesley/SamTimer/pull/2)
 - [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) / [Root-My-Galaxy-Payloads](https://github.com/BuSung-dev/Root-My-Galaxy-Payloads) reference project and payloads (Apache-2.0)
