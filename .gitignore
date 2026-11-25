@@ -3,7 +3,7 @@
 build/
 !gradle/wrapper/gradle-wrapper.jar
 
-# 本机 SDK 路径（不要提交）
+# Local SDK paths (do not commit)
 local.properties
 
 # IDE
@@ -14,18 +14,18 @@ captures/
 .externalNativeBuild/
 .cxx/
 
-# 签名文件（不要提交）
+# Signing files (do not commit)
 *.keystore
 *.jks
 *.idsig
 
-# 日志与临时文件
+# Logs and temporary files
 *.log
 *.tmp
 
 # Kotlin daemon session files
 .kotlin/sessions/
 
-# 项目提示词（仅本地，不提交）
-# AGENTS.md 现在随仓库公开：fork 的人用 AI 编译时，AI 会自动读它
+# Project prompts (local only, do not commit)
+# AGENTS.md is now public in the repository: AI will automatically read it when forkers compile with AI assistance
 dist/
