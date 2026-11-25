@@ -1,156 +1,142 @@
-# 贡献指南
+# Contributing Guidelines
 
-感谢愿意帮忙。这个项目最需要的是**机型/固件适配**，其次是带日志的失败报告。
-
----
-
-## 报告问题
-
-请直接用仓库里的 **issue 模板**（Bug / 成功反馈 / 功能建议）。模板已经列出需要的信息，其中这几项是排查的前提：
-
-- 机型完整型号（`SM-S9280` 这种）
-- 系统版本 / One UI 版本
-- **完整内核版本串** —— `adb shell uname -r`，要一整行，形如
-  `6.1.145-android14-11-3254743-abS9280ZCS6DZH3`。**不要只给尾部的构建号**，
-  同一个构建号在不同平台上偏移都可能不同。
-- 内部版本号（设置 → 关于手机 → 软件信息，或 `getprop ro.build.display.id`）
-- App 版本 + 引擎（GhostLock 43499 / 98260 UAF）+ KSU 驱动版本（3.2.5 / 3.3.0）
-- **运行日志编号**（v3.6.3 起：运行日志页 →「复制编号」），或直接贴完整日志
-- 失败发生在哪一步（日志里最后一个 `[*]` / `[-]` 行）
-
-知道这些之后，大多数问题能一眼定位，例如：
-
-> 内核构建号 `33419968` 与已适配的 `3254743` 不同 → 载荷不能复用，需要独立定标。
-
-> 98260 引擎请务必说明是「一次开机第几次尝试」：同一开机重复尝试会让内核状态变脏，日志会断在 plant 中途。
+Thank you for your willingness to help. What this project needs most is **device/firmware adaptation**, followed by failure reports that actually include logs.
 
 ---
 
-## 机型适配（最有价值的贡献）
+## Reporting Issues
 
-本项目有两套引擎，载荷结构不同，适配流程也不同：
+Please use the repository’s **issue templates** directly (Bug / Success Report / Feature Request). The templates already list the required information. The following items are absolute prerequisites for troubleshooting:
 
-| 引擎 | 适用 | 载荷位置 | 定标依据 |
-|---|---|---|---|
-| **GhostLock 43499** | 旧固件（6.1.145 及更早） | `app/src/main/assets/cve-2026-43499-<构建号>` | 符号表 + p0 指纹 |
-| **98260 UAF** | One UI 9.0 / 6.1.162 等新固件 | `app/src/main/assets/samtimer/targets/<TAG>/libtimer` | 符号表 + BTF + 调用点反汇编 |
+- Full device model (e.g., `SM-S9280`)
+- System version / One UI version
+- **Full kernel version string** — `adb shell uname -r`. Provide the entire line, formatted like `6.1.145-android14-11-3254743-abS9280ZCS6DZH3`. **Do not just provide the trailing build number.** The same build number can have different offsets on different platforms.
+- Build number (Settings → About phone → Software information, or `getprop ro.build.display.id`)
+- App version + Engine (GhostLock 43499 / 98260 UAF) + KSU driver version (3.2.5 / 3.3.0)
+- **Runtime log ID** (from v3.6.3 onwards: Log page → "Copy ID"), or paste the full log directly.
+- The exact step where the failure occurred (the last `[*]` or `[-]` line in the log).
 
-### 43499 载荷适配
+With this information, most issues can be diagnosed at a glance. For example:
 
-同 SoC 系列也**不能**直接套用别人的载荷 —— 内核构建号不同、甚至构建号相同
-而平台不同时，符号偏移都可能不一样（e3q 与 e1q 同为
-`…-android14-11-3254743-…`，实测有 11 项偏移不同）。所以需要逐项定标。
+> Kernel build number `33419968` differs from the adapted `3254743` → Payload cannot be reused; independent offset mapping is required.
 
-大致流程（参考 `docs/port-e1q-S9210ZCS6DZI1.md` 的完整实例）：
+> For the 98260 engine, you **must** specify "which attempt this is since the last boot": Repeated attempts within the same boot session will dirty the kernel state, and the log will halt midway through the `plant` phase.
 
-1. 从官方固件包取出 `boot.img` → 内核段（注意 boot header 版本与内核段偏移）
-2. 用 `vmlinux-to-elf` 恢复符号
-3. 逐项定标 `target.h` 里的偏移（`llvm-nm` + 必要时的指针扫描）
-4. 确认 `P0_KERNEL_PHYS_LOAD` —— 这一项经常需要按机型改
-   （例如 `0x80080000` 会恒定卡在 `p0 physical write status=256 ok=0`，
-   改用 `0xa8000000` 才通过）
-5. 生成 p0 指纹表
-6. 编译载荷
-7. **真机验证**
+---
 
-### 98260 载荷适配（per-target，issue #40 起）
+## Device Adaptation (The Most Valuable Contribution)
 
-98260 的公共载荷是 `samtimer/libtimer`（覆盖 EZIF/EZJ1）。**只加构建号专属载荷，不改公共载荷**：
+This project uses two engines with different payload structures and adaptation processes:
 
+| Engine | Applicable To | Payload Location | Mapping Basis |
+| --- | --- | --- | --- |
+| **GhostLock 43499** | Older firmware (6.1.145 and earlier) | `app/src/main/assets/cve-2026-43499-<build_number>` | Symbol table + p0 fingerprint |
+| **98260 UAF** | One UI 9.0 / 6.1.162 and newer firmware | `app/src/main/assets/samtimer/targets/<TAG>/libtimer` | Symbol table + BTF + Call-site disassembly |
+
+### 43499 Payload Adaptation
+
+Even within the same SoC series, you **cannot** blindly reuse someone else’s payload. If the kernel build number differs, or even if the build number is the same but the platform is different, symbol offsets can vary (e.g., `e3q` and `e1q` both use `…-android14-11-3254743-…`, but testing shows 11 different offsets). Each offset must be mapped individually.
+
+General process (refer to `docs/port-e1q-S9210ZCS6DZI1.md` for a complete example):
+
+1. Extract `boot.img` from the official firmware package → kernel segment (note the boot header version and kernel segment offset).
+2. Recover symbols using `vmlinux-to-elf`.
+3. Map offsets in `target.h` item by item (`llvm-nm` + pointer scanning when necessary).
+4. Verify `P0_KERNEL_PHYS_LOAD` — this item frequently requires device-specific adjustments (e.g., `0x80080000` will consistently stall at `p0 physical write status=256 ok=0`, whereas changing it to `0xa8000000` succeeds).
+5. Generate the p0 fingerprint table.
+6. Compile the payload.
+7. **Real device verification.**
+
+### 98260 Payload Adaptation (per-target, from issue #40)
+
+The public payload for 98260 is `samtimer/libtimer` (covering EZIF/EZJ1). **Only add build-number-specific payloads; do not modify the public payload:**
+
+```text
+app/src/main/assets/samtimer/targets/<TAG>/libtimer   # Required: exploit payload compiled for this specific build number
+app/src/main/assets/samtimer/targets/<TAG>/uhexec     # Optional: only include if it differs from the public version
+app/src/main/assets/samtimer/targets/<TAG>/ksud       # Optional: only include if the public 3.2.5 driver fails to load
 ```
-app/src/main/assets/samtimer/targets/<TAG>/libtimer   # 必需，按构建号编译的 exploit 载荷
-app/src/main/assets/samtimer/targets/<TAG>/uhexec     # 可选，与公共版本不同才放
-app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 驱动加载不了才放
-```
 
-- `<TAG>` = **完整构建号大写**（如 `S9280ZCS6DZJ3`，不要用 `DZJ3` 这种四位缩写）
-- 运行时选择已经实现：`samtimer/targets/<设备构建号>/` 存在就用它，否则回退公共载荷
-- 源码放 `app/src/main/cpp/targets/<TAG>/`（offsets 头文件 + 构建说明），PR 里附：
-  - `libtimer` 的 **SHA-256** 与体积
-  - 编译命令（NDK 版本 + flags）
-  - 定标记录（符号来源、BTF 校验了哪些结构、失败签名）
+- `<TAG>` = **Full build number in UPPERCASE** (e.g., `S9280ZCS6DZJ3`. Do not use 4-letter abbreviations like `DZJ3`).
+- Runtime selection is already implemented: if `samtimer/targets/<device_build_number>/` exists, it will be used; otherwise, it falls back to the public payload.
+- Source code goes in `app/src/main/cpp/targets/<TAG>/` (offsets header + build instructions). Your PR must include:
+  - **SHA-256** and file size of `libtimer`.
+  - Build command (NDK version + flags).
+  - Mapping record (symbol sources, which structures were verified via BTF, and failure signatures).
 
-98260 定标至少需要覆盖：
+98260 mapping must cover at least the following:
 
-1. `do_timer_create()` 里 `kmem_cache_alloc(posix_timers_cache, …)` 的**返回指令地址**（`*_STATIC` / `*_LOW21`），用于 tracefs 记录匹配
-2. `prepare_creds()` / `dup_task_struct()` 的 cred/task 分配点
-3. 静态符号：`selinux_state`、`panic_on_warn`、`system_unbound_wq`、`call_usermodehelper_exec_work`、`root_user`、`init_user_ns`、`anon_pipe_buf_ops` 等
-4. 结构偏移（BTF 校验）：`k_itimer`、`signal_struct.posix_cputimers`、`workqueue_struct` / `pool_workqueue` / `pool`、`pipe_buf_ops`、`cred`、`task_struct`
-5. `KERNEL_PHYS_LOAD` 与 `WQ_DFL_PWQ_OFF` 这类与内核线相关的常量（6.1.145 与 6.1.162 不同）
+1. The **return instruction address** of `kmem_cache_alloc(posix_timers_cache, …)` inside `do_timer_create()` (`*_STATIC` / `*_LOW21`), used for tracefs record matching.
+2. cred/task allocation points in `prepare_creds()` / `dup_task_struct()`.
+3. Static symbols: `selinux_state`, `panic_on_warn`, `system_unbound_wq`, `call_usermodehelper_exec_work`, `root_user`, `init_user_ns`, `anon_pipe_buf_ops`, etc.
+4. Structure offsets (BTF verified): `k_itimer`, `signal_struct.posix_cputimers`, `workqueue_struct` / `pool_workqueue` / `pool`, `pipe_buf_ops`, `cred`, `task_struct`.
+5. Constants related to kernel lines, such as `KERNEL_PHYS_LOAD` and `WQ_DFL_PWQ_OFF` (these differ between 6.1.145 and 6.1.162).
 
-> 同一个内核构建号（`6.1.145-android14-11-<build>-ab<BUILD>` 里 `<build>` 相同）才能复用偏移；
-> 平台不同（e3q / e1q）即使构建号相同也要逐项核对。
+> Offsets can only be reused if the kernel build number (the `<build>` part in `6.1.145-android14-11-<build>-ab<BUILD>`) is identical. If the platform differs (e.g., `e3q` vs `e1q`), every offset must be verified individually, even if the build number matches.
 
-### 提交 PR 时的硬性要求
+### Hard Requirements for Submitting a PR
 
-| 要求 | 原因 |
-|---|---|
-| **真机验证过，并写明验证条件** | 未验证的载荷合进去，用户会拿它去刷真机 |
-| 附载荷的 **sha256 与体积** | 便于核对，避免二进制被替换 |
-| 附**完整偏移对照表**（与本项目已有平台比） | 后人适配时能看出规律 |
-| 98260 载荷附 **BTF / 反汇编校验证据** | 结构偏移错了不是"跑不起来"，是直接 panic |
-| 附**失败签名**（你踩过的坑） | 以后一眼分辨「载荷不匹配」与「race 没跑起来」 |
-| 新增/修改的载荷**不得包含**任何外联、下载、执行第三方代码的行为 | 这是提权工具，用户信任成本极高 |
-| 第三方 ksud / 模块资产注明来源与许可（MIT / Apache-2.0 / GPL） | 本仓库 GPL-3.0，需要能再分发 |
+| Requirement | Reason |
+| --- | --- |
+| **Verified on a real device, with conditions stated** | Unverified payloads merged into the repo will be used by others on their actual devices. |
+| Include payload **SHA-256 and file size** | Allows verification and prevents binary substitution. |
+| Include a **complete offset comparison table** (vs. existing platforms in this project) | Helps future contributors identify patterns. |
+| 98260 payloads must include **BTF / disassembly verification evidence** | Incorrect structure offsets don't just "fail to run"; they cause an immediate kernel panic. |
+| Include **failure signatures** (the pitfalls you encountered) | Allows instant differentiation later between "payload mismatch" and "race condition didn't trigger". |
+| New/modified payloads **must not contain** any external linking, downloading, or execution of third-party code. | This is a privilege escalation tool; user trust costs are extremely high. |
+| Third-party `ksud` / module assets must cite source and license (MIT / Apache-2.0 / GPL). | This repository is GPL-3.0 and requires redistributability. |
 
-PR 里通常需要改这几处：
+A typical PR will need to modify the following areas:
 
-```
+```text
 # GhostLock 43499
-app/src/main/assets/cve-2026-43499-<构建号>     # 载荷
-app/src/main/kotlin/.../RootViewModel.kt        # FirmwareVersion 新增一条
-server/payloads.json                            # 在线清单新增一条
-docs/port-<平台>-<构建号>.md                     # 移植报告
+app/src/main/assets/cve-2026-43499-<build_number>     # Payload
+app/src/main/kotlin/.../RootViewModel.kt              # Add new entry to FirmwareVersion
+server/payloads.json                                  # Add new entry to online manifest
+docs/port-<platform>-<build_number>.md                # Porting report
 
 # 98260 UAF
 app/src/main/assets/samtimer/targets/<TAG>/libtimer
-app/src/main/cpp/targets/<TAG>/                 # offsets 头 + 构建说明
-docs/port-98260-<TAG>.md                        # 定标记录
+app/src/main/cpp/targets/<TAG>/                       # Offsets header + build instructions
+docs/port-98260-<TAG>.md                              # Mapping record
 ```
 
-新条目默认请标 `tested = false`，等真机跑通再改 `true`。
+New entries should default to `tested = false` and only be changed to `true` after successful real-device execution.
 
 ---
 
-## 自行编译、自行发布（fork）
+## Self-Compiling and Self-Releasing (Forks)
 
-**可以 fork，但请先读 `AGENTS.md` 里「如果你是 fork 后自行编译」那一节。**
-摘要：
+**You may fork, but please read the "If You Are Forking and Compiling Yourself" section in `AGENTS.md` first.** 
+Summary:
 
-1. **改掉统计上传地址**（`LogUploader.DEFAULT_ENDPOINT`、`PayloadStatus.ENDPOINT`），
-   或设为 `""` 直接关掉上传。
-2. **用你自己的签名 keystore**。服务端按签名区分官方与第三方，
-   非官方签名会被记为 `third_party` 并**从统计中排除** ——
-   所以漏改地址不会污染官方成功率，但仍会占用官方带宽。
-3. **自制载荷不用改服务端清单**：非官方构建会自动跳过在线清单，只用内置的。
-4. **别照抄别人的载荷**，理由见上文。
+1. **Change the statistics upload address** (`LogUploader.DEFAULT_ENDPOINT`, `PayloadStatus.ENDPOINT`), or set it to `""` to disable uploading entirely.
+2. **Use your own signature keystore.** The server distinguishes official from third-party builds by signature. Non-official signatures are marked as `third_party` and **excluded from statistics**. Therefore, forgetting to change the address won't pollute official success rates, but it will still waste official bandwidth.
+3. **Custom payloads do not require server manifest changes:** Non-official builds automatically skip the online manifest and only use the built-in one.
+4. **Do not blindly copy others' payloads.** Reasons stated above.
 
 ---
 
-## 代码约定
+## Code Conventions
 
-- 从 `main` 切分支，PR 指向 `main`。
-- commit 信息写清**为什么**改，而不只是改了什么；涉及取舍的请把取舍写出来。
-- 注释请解释「为什么」，代码本身说明「是什么」。
-- 新增用户可见文案时，同步补 `values-zh-rCN` / `values-zh-rTW` / `values-zh-rHK`
-  （英文在 `values/`）。缺翻译会回落英文，不报错。
-- 改动 App 行为后，请在真机上至少验证一次目标路径。
-- 新增 AIDL 方法时同步改 `IRootService.aidl` 与 `SamTimerUserService` 的实现，并保持向后兼容（旧 UserService 进程可能还在跑）。
+- Branch from `main`; PRs should target `main`.
+- Commit messages must explain **why** the change was made, not just what was changed. Document any trade-offs considered.
+- Comments should explain "why"; the code itself should explain "what".
+- When adding new user-facing copy, simultaneously update `values-zh-rCN` / `values-zh-rTW` / `values-zh-rHK` (English goes in `values/`). Missing translations will gracefully fall back to English without crashing.
+- After modifying app behavior, verify the target path on a real device at least once.
+- When adding new AIDL methods, update both `IRootService.aidl` and the `SamTimerUserService` implementation simultaneously, maintaining backward compatibility (older UserService processes may still be running).
 
-## 不会被合并的内容
+## What Will Not Be Merged
 
-- **未做真机验证**的新载荷（宁可不收）
-- 把统计上传指向**第三方服务器**的改动
-- 移除版权/来源说明、或与项目许可证冲突的代码
-- 仅改版本号、空提交、纯格式化的噪音 PR
+- **Unverified** new payloads (better to reject than to brick a user's phone).
+- Changes that point statistics uploading to **third-party servers**.
+- Removal of copyright/attribution notices, or code that conflicts with the project license.
+- Noise PRs: version bump-only commits, empty commits, or pure formatting changes.
 
 ---
 
-## 许可证
+## Licensing
 
-提交即表示你同意以本项目的许可证发布你的贡献。请**不要**提交来源不明、
-无许可证或明确禁止再分发的代码（例如某些无 LICENSE 的仓库，
-可以参考其思路，但不要复制实现）。
+By submitting a contribution, you agree to release your contribution under this project's license. Please **do not** submit code of unknown origin, without a license, or that explicitly forbids redistribution (e.g., some repositories without a LICENSE file; you may reference their concepts, but do not copy their implementation).
 
-已知可再分发的参考实现：SamTimer（MIT）、Root-My-Galaxy-Payloads（Apache-2.0）、
-KernelSU（GPL-2.0）；合入时在 `THIRD_PARTY_NOTICES.md` 保留对应声明。
+Known redistributable reference implementations: SamTimer (MIT), Root-My-Galaxy-Payloads (Apache-2.0), KernelSU (GPL-2.0). Ensure corresponding declarations are retained in `THIRD_PARTY_NOTICES.md` upon merging.
