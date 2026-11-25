@@ -12,8 +12,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.4--beta.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
-  <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/downloads/BAPPITTO/root-my-s24/total?style=flat-square&color=1E88E5"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/stars/BAPPITTO/root-my-s24?style=flat-square&color=1E88E5"></a>
   <a href="https://github.com/BAPPITTO/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
