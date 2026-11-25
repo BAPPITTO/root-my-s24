@@ -15,11 +15,11 @@
   <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/downloads/BAPPITTO/root-my-s24/total?style=flat-square&color=1E88E5"></a>
   <a href="https://github.com/BAPPITTO/root-my-s24/releases"><img src="https://img.shields.io/github/stars/BAPPITTO/root-my-s24?style=flat-square&color=1E88E5"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
-  <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/../CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
+  <a href="https://github.com/BAPPITTO/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
 </p>
 
 <p align="center">
-  <b>English</b> &nbsp;|&nbsp; <a href="docs/">Docs</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="PRIVACY.md">Privacy</a>
+  <b>English</b> &nbsp;|&nbsp; <a href="docs/">Docs</a> · <a href="../CONTRIBUTING.md">Contributing</a> · <a href="PRIVACY.md">Privacy</a>
 </p>
 
 > **Disclaimer**: for security research and your own devices only. Kernel exploitation can crash the system, lose data or brick the device; you accept the risk. Do not use it on devices you do not own.
