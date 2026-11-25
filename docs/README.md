@@ -264,4 +264,4 @@ Neither chain touches persistent partitions; the bootloader stays locked and the
 
 ## License
 
-[GNU General Public License v3.0](LICENSE).
+[GNU General Public License v3.0](../LICENSE).
