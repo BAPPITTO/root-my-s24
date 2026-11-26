@@ -1425,49 +1425,46 @@
          Replace with real cover content from layout-recipes.md.
          ============================================================ -->
           <section class="poster wide" id="banner">
-        <div class="content stack gap-8">
-          <div class="chrome-min">
-            <span>Temporary Root · Samsung Galaxy</span>
-            <span>V3.6.2 — 2026.11</span>
+  <div class="content stack gap-8">
+    <div class="chrome-min">
+      <span>Temporary Root · Samsung Galaxy</span>
+      <span>v3.6.4-beta.1 — 2026.11</span>
+    </div>
+    <div class="grid-12 grow" style="align-items:start">
+      <div class="span-7 stack gap-7">
+        <p class="t-cat">CVE-2026-98260 / CVE-2026-43499</p>
+        <h1 class="h-hero">RootMyS24</h1>
+        <hr class="hr-accent">
+        <p class="lead">Temporary root without unlocking the bootloader. Dual-engine late-load for KernelSU; reverts on reboot. No boot partition writes, KNOX remains intact.</p>
+        <p class="t-meta">Posix-cpu-timers UAF / Rtmutex Waiter UAF</p>
+      </div>
+      <div class="span-5 stack gap-7">
+        <div class="stacked-ledger">
+          <div class="ledger-row">
+            <p class="ledger-num">01</p>
+            <p class="ledger-lbl">98260 UAF<span class="sub">One UI 9.0 · kernel 6.1.162</span></p>
+            <span></span>
           </div>
-
-          <div class="grid-12 grow" style="align-items:start">
-            <div class="span-7 stack gap-7">
-              <p class="t-cat">CVE-2026-98260 / CVE-2026-43499</p>
-              <h1 class="h-hero">RootMyS24</h1>
-              <hr class="hr-accent">
-              <p class="lead">免解锁 bootloader 的临时 root。双引擎 late-load 加载 KernelSU，重启即恢复原状；不写 boot，KNOX 保持原样。</p>
-              <p class="t-meta">Posix-cpu-timers UAF / Rtmutex Waiter UAF</p>
-            </div>
-
-            <div class="span-5 stack gap-7">
-              <div class="stacked-ledger">
-                <div class="ledger-row">
-                  <p class="ledger-num">01</p>
-                  <p class="ledger-lbl">98260 UAF<span class="sub">One UI 9.0 · kernel 6.1.162</span></p>
-                  <span></span>
-                </div>
-                <div class="ledger-row">
-                  <p class="ledger-num">02</p>
-                  <p class="ledger-lbl">GhostLock<span class="sub">6.1.145 及更早固件</span></p>
-                  <span></span>
-                </div>
-                <div class="ledger-row">
-                  <p class="ledger-num">03</p>
-                  <p class="ledger-lbl">KernelSU<span class="sub">late-load · 3.2.5 默认驱动</span></p>
-                  <span></span>
-                </div>
-              </div>
-            </div>
+          <div class="ledger-row">
+            <p class="ledger-num">02</p>
+            <p class="ledger-lbl">GhostLock<span class="sub">6.1.145 and older firmware</span></p>
+            <span></span>
           </div>
-
-          <hr class="hr-hairline">
-          <div class="row" style="justify-content:space-between;align-items:center">
-            <p class="t-meta">github.com/NanoTurtle1145/root-my-s24</p>
-            <p class="t-meta">GPL-3.0 · Research use only</p>
+          <div class="ledger-row">
+            <p class="ledger-num">03</p>
+            <p class="ledger-lbl">KernelSU<span class="sub">late-load · 3.2.5 default driver</span></p>
+            <span></span>
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+    <hr class="hr-hairline">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <p class="t-meta">github.com/BAPPITTO/root-my-s24</p>
+      <p class="t-meta">GPL-3.0 · Research use only</p>
+    </div>
+  </div>
+</section>
 
   </main>
 
